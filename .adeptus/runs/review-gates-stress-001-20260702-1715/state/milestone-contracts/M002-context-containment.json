@@ -1,0 +1,62 @@
+{
+  "run_id": "review-gates-stress-001-20260702-1715",
+  "milestone_id": "M002-context-containment",
+  "produced_by": "magos_strategos",
+  "planner_agent": "lexmechanic_planner",
+  "goal": "Add downstream worker context preparation that preserves task-relevant fields and removes internal control-state fields.",
+  "scope": [
+    "Small module/function for preparing downstream worker context.",
+    "Explicit exclusion of current_state_path, next_action, exact_next_action, repair_count, final_action, and terminal_reason.",
+    "Tests proving forbidden fields are excluded and task-relevant fields remain."
+  ],
+  "inputs": [
+    "state/intake-summary.md acceptance criteria AC04 and AC07.",
+    "This milestone contract.",
+    "M001 milestone summary after PASS.",
+    "Focused M001 product files needed to integrate context helper with package conventions."
+  ],
+  "expected_outputs": [
+    "tactical-plan.md for this milestone.",
+    "Story packets for context helper and tests.",
+    "Product context-containment implementation and tests only after tactical_pre_review PASS and story-level execution."
+  ],
+  "acceptance_criteria": [
+    "A public or internal package API prepares worker context from bounded input without depending on Adeptus runtime artifacts.",
+    "Forbidden internal control fields are absent from prepared context even when present in input.",
+    "Task-relevant non-control fields needed by a worker remain available and are covered by focused tests."
+  ],
+  "non_goals": [
+    "No full Adeptus packet generator.",
+    "No controller state machine implementation.",
+    "No reads from .adeptus/runs as product behavior.",
+    "No CLI, docs, persistence, MCP tool changes, or broad refactors."
+  ],
+  "dependencies": [
+    "M001-domain-gates"
+  ],
+  "dependency_summaries": [
+    {
+      "milestone_id": "M001-domain-gates",
+      "needed_contract": "Importable reviewflow package conventions and any stable domain identifiers useful for task context."
+    }
+  ],
+  "allowed_context": [
+    "state/intake-summary.md",
+    "this milestone contract",
+    "state/milestone-summaries/M001-domain-gates.json if present after PASS",
+    "supplied tactical role excerpt",
+    "focused M001 product files named by the tactical plan"
+  ],
+  "expected_validation": [
+    "Focused pytest for context containment using python -B -m pytest -q -p no:cacheprovider or narrower equivalent.",
+    "Runtime cache/temp cleanup before handoff."
+  ],
+  "story_guidance": {
+    "recommended_story_count": 2,
+    "notes": "Split helper behavior and focused tests if useful. Lexmechanic owns exact story packets."
+  },
+  "stop_conditions": [
+    "Stop if implementation would require exposing internal control-state as live worker instructions.",
+    "Stop if M001 outputs needed for package integration are missing or failed review."
+  ]
+}

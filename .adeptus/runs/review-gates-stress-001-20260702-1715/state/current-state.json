@@ -1,0 +1,15 @@
+﻿{
+    "run_id":  "review-gates-stress-001-20260702-1715",
+    "run_status":  "in_progress",
+    "current_gate":  "M002_S002_story_review_passed_after_rework",
+    "next_agent":  "inquisitor_gatekeeper",
+    "next_context_packet":  ".adeptus/runs/review-gates-stress-001-20260702-1715/state/milestone-contracts/M002-context-containment.json",
+    "final_action":  null,
+    "terminal_reason":  null,
+    "final_review_repair_count":  0,
+    "tool_request_activity":  "none",
+    "rework_cycles":  [
+                          "M001/S001 story_review FAIL_REWORK_STORY: enum vocabulary mismatch",
+                          "M002/S002 post-story milestone validation rework: update package export test for approved context helper exports"
+                      ]
+}
