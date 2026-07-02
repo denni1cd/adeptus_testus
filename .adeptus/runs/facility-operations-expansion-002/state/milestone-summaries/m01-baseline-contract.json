@@ -1,0 +1,28 @@
+{
+  "run_id": "facility-operations-expansion-002",
+  "milestone_id": "m01-baseline-contract",
+  "status": "passed_milestone_final_review",
+  "stories": [
+    {
+      "story_id": "s01-baseline-characterization",
+      "review_action": "PASS",
+      "review_path": ".adeptus/runs/facility-operations-expansion-002/milestones/m01-baseline-contract/stories/s01-baseline-characterization/reviews/story-review-decision.md"
+    },
+    {
+      "story_id": "s02-expansion-contract-boundaries",
+      "review_action": "PASS",
+      "review_path": ".adeptus/runs/facility-operations-expansion-002/milestones/m01-baseline-contract/stories/s02-expansion-contract-boundaries/reviews/story-review-decision.md"
+    },
+    {
+      "story_id": "s03-conditional-baseline-repair",
+      "review_action": "SKIPPED",
+      "reason": "s01 found no baseline failure requiring conditional repair"
+    }
+  ],
+  "baseline_preservation": "Baseline validation passed before implementation; s01 added CLI subprocess coverage for --until 09:00 and --until 12:00; no product files changed in m01.",
+  "validation_summary": {
+    "pytest": "adeptus_pytest(args=[\"-q\"], timeout_seconds=60) passed with 7 tests during s01, stdin DEVNULL and timed_out false per story evidence",
+    "cleanup": "No runtime cache/temp artifacts remained after handoff cleanup"
+  },
+  "remaining_risks": []
+}

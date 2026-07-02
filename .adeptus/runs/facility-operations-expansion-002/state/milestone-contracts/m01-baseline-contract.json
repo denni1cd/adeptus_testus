@@ -1,0 +1,48 @@
+{
+  "milestone_id": "m01-baseline-contract",
+  "run_id": "facility-operations-expansion-002",
+  "title": "Baseline Preservation And Design Contract",
+  "scope": "Establish the compatibility contract and tactical story boundaries for the expansion. Add or adjust baseline characterization tests only where needed to preserve existing public behavior before larger changes.",
+  "inputs": [
+    ".adeptus/runs/facility-operations-expansion-002/state/intake-summary.md",
+    ".adeptus/runs/facility-operations-expansion-002/state/baseline-validation-summary.md",
+    "Focused target files as needed: src/adeptus_testus/facility.py, src/adeptus_testus/cli.py, tests/test_facility.py, README.md, pyproject.toml"
+  ],
+  "outputs": [
+    "tactical plan for this milestone",
+    "bounded story packets for compatibility characterization and design-boundary work",
+    "milestone summary after reviewed stories"
+  ],
+  "acceptance_criteria": [
+    "Baseline public behavior is explicitly captured in story-level acceptance criteria or focused tests without weakening existing tests.",
+    "Tactical plan defines bounded stories that avoid broad rewrites and preserve default scenario and CLI compatibility.",
+    "No production behavior is changed except narrowly to preserve or clarify existing baseline behavior if a reviewed story requires it."
+  ],
+  "suggested_story_count": "2-3",
+  "suggested_story_boundaries": [
+    "Characterize baseline CLI/model/save-load behavior and identify any missing preservation tests.",
+    "Define focused implementation contracts for graph, scenario, incident, report, CLI, and docs without implementing later milestones.",
+    "Optional narrow baseline repair only if existing behavior unexpectedly fails; route through Enginseer and Inquisitor."
+  ],
+  "non_goals": [
+    "Do not implement graph/pathing, alternate scenarios, incidents, reports, expanded CLI options, or README expansion in this milestone unless needed only as compatibility scaffolding.",
+    "Do not delete existing tests to make future work easier.",
+    "Do not read prior .adeptus/runs artifacts except the named baseline evidence."
+  ],
+  "dependency_summary": "Depends only on the root intake summary, baseline validation evidence, and focused current repo files. No prior milestone is required.",
+  "change_boundary": [
+    "Allowed product files if story packets require them: tests/test_facility.py and narrowly related source files for baseline preservation only.",
+    "No installed Adeptus skill changes.",
+    "No controller-side product repair."
+  ],
+  "test_policy": "Use focused pytest tests for baseline preservation. Final story validation should include relevant pytest selection or full pytest when cheap.",
+  "validation_expectations": [
+    "MCP syntax and pytest validation remain passing by milestone completion.",
+    "Cleanup runtime cache/temp artifacts before handoff."
+  ],
+  "context_rules": [
+    "Lexmechanic reads this contract and intake-summary only.",
+    "Enginseer receives story packets only and reads focused target files named there.",
+    "If more context is needed, stop for explicit packet update or escalation."
+  ]
+}

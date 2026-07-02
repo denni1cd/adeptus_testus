@@ -1,0 +1,11 @@
+{
+  "run_id": "facility-operations-expansion-002",
+  "run_status": "in_progress",
+  "current_gate": "m03_tactical_pre_review",
+  "last_action": "PASS",
+  "next_agent": "enginseer_implementer",
+  "next_context_packet": ".adeptus/runs/facility-operations-expansion-002/packets/m03-incidents-reports-cli-docs/s01-deterministic-incidents/story-packet.md",
+  "final_action": null,
+  "terminal_reason": null,
+  "final_review_repair_count": 0
+}

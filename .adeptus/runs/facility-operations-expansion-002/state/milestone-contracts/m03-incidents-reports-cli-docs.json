@@ -1,0 +1,51 @@
+{
+  "milestone_id": "m03-incidents-reports-cli-docs",
+  "run_id": "facility-operations-expansion-002",
+  "title": "Incidents, Reports, CLI, And Documentation",
+  "scope": "Implement deterministic scheduled incidents, operations text/JSON reports, expanded CLI options, README updates, final tests, and validation readiness.",
+  "inputs": [
+    ".adeptus/runs/facility-operations-expansion-002/state/intake-summary.md",
+    ".adeptus/runs/facility-operations-expansion-002/state/milestone-summaries/m02-graph-scenarios.json",
+    "Focused target files named by story packets, expected around src/adeptus_testus/facility.py, src/adeptus_testus/cli.py, tests/test_facility.py, README.md"
+  ],
+  "outputs": [
+    "tactical plan for incident/report/CLI/docs work",
+    "bounded story packets for incidents, reports, CLI, docs, and final validation evidence",
+    "reviewed implementation changes and tests",
+    "milestone summary after review"
+  ],
+  "acceptance_criteria": [
+    "At least two deterministic incidents exist and are encountered or reported with time, room, name, severity/category, effect, and handling note; incident behavior is covered by tests.",
+    "Operations text report includes scenario name, start/end time, rooms visited, timeline, incidents, final needs, and warnings; JSON report output is deterministic if implemented.",
+    "CLI preserves --until behavior and supports scenario/report/timeline options; README concisely documents preview, scenarios, graph, incidents, reports, and test command."
+  ],
+  "suggested_story_count": "3-4",
+  "suggested_story_boundaries": [
+    "Deterministic incident model and tests.",
+    "Operations report text/JSON generation and tests.",
+    "Expanded CLI behavior with headless pytest coverage.",
+    "README update and final validation evidence story if needed."
+  ],
+  "non_goals": [
+    "Do not alter graph/scenario behavior except through reviewed dependency-driven fixes.",
+    "Do not add GUI, curses, rich terminal UI, terminal colors, external programs, network, database, randomness, or wall-clock dependence.",
+    "Do not create broad cleanup or reconciliation stories unrelated to acceptance criteria."
+  ],
+  "dependency_summary": "Requires m02 graph/scenario behavior so reports and incidents can refer to named scenarios, routes, timeline, and expanded state. Must preserve m01 baseline compatibility.",
+  "change_boundary": [
+    "Expected product files: src/adeptus_testus/facility.py, src/adeptus_testus/cli.py, tests/test_facility.py, README.md.",
+    "Package metadata should remain dependency-free unless a reviewed story proves a dependency is necessary.",
+    "No installed Adeptus skill changes or prior run artifact rewrites."
+  ],
+  "test_policy": "Story tests should directly verify incident, report, CLI, and docs acceptance criteria. Final validation must run Adeptus MCP syntax and pytest tools.",
+  "validation_expectations": [
+    "Final milestone evidence must include adeptus_python_compile(paths=[\"src/adeptus_testus\", \"tests\"]).",
+    "Final milestone evidence must include adeptus_pytest(args=[\"-q\"], timeout_seconds=60) with stdin DEVNULL and timed_out false.",
+    "Cleanup evidence must show no validation cache/temp artifacts remain outside protected .adeptus/runs artifacts."
+  ],
+  "context_rules": [
+    "Lexmechanic reads this contract, intake-summary, and m02 milestone summary only.",
+    "Enginseer reads assigned story packet plus focused files listed in that packet.",
+    "Any product repair after review or validation failure must route through Enginseer and Inquisitor, not the controller."
+  ]
+}

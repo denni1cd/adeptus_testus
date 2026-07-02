@@ -1,0 +1,88 @@
+{
+  "run_id": "facility-operations-expansion-002",
+  "agent": "magos_strategos",
+  "contract_version": 1,
+  "intake_source": "facility-operations-expansion-002.intake.md",
+  "baseline_validation_evidence": ".adeptus/runs/facility-operations-expansion-002/state/baseline-validation-summary.md",
+  "global_goal": "Expand the existing Adeptus Testus Facility into a deterministic facility-operations simulator while preserving baseline behavior.",
+  "baseline_contract": {
+    "must_preserve": [
+      "python -m pytest -q passes",
+      "python -m adeptus_testus --until 12:00 remains compatible",
+      "python -m adeptus_testus --until 09:00 remains compatible",
+      "facility has exactly the seven required rooms",
+      "Sarah starts the default scenario at 08:00 in Dormitory",
+      "Sarah does not require sleep by 09:00 in the default scenario",
+      "default deterministic scenario advances through at least 12:00",
+      "renderer lists all rooms and marks Sarah's current room",
+      "JSON save/load preserves simulation state",
+      "invalid rooms or invalid movement fail predictably",
+      "existing tests remain meaningful"
+    ],
+    "required_rooms": [
+      "Dormitory",
+      "Kitchen",
+      "Workshop",
+      "Infirmary",
+      "Recreation",
+      "Garden",
+      "Control Room"
+    ]
+  },
+  "global_constraints": [
+    "headless deterministic simulator",
+    "standard-library runtime only unless explicitly justified and reviewed",
+    "no randomness or wall-clock dependence",
+    "no GUI, curses, terminal color dependency, database, network service, authentication, game engine, or image generation",
+    "do not modify installed Adeptus skill files",
+    "do not delete or rewrite prior .adeptus/runs audit artifacts",
+    "after strategic pre-review, use bounded packets rather than full intake, full strategic plan, full workflow, full installed SKILL.md, full project tree, or old run artifacts",
+    "controller repair boundary applies to all product-file repairs"
+  ],
+  "controller_repair_boundary": {
+    "controller_may_repair_only": [
+      "Adeptus run-state artifacts",
+      "routing artifacts",
+      "context packets",
+      "review artifacts",
+      "validation-summary artifacts",
+      "audit artifacts"
+    ],
+    "product_repair_route": [
+      "create or update a bounded repair packet for the affected story",
+      "invoke Enginseer Implementer for product-file repair",
+      "require Inquisitor Gatekeeper review of repaired story output",
+      "rerun validation only after implementation repair and review"
+    ]
+  },
+  "validation_contract": {
+    "final_required": [
+      "adeptus_python_compile(paths=[\"src/adeptus_testus\", \"tests\"])",
+      "adeptus_pytest(args=[\"-q\"], timeout_seconds=60)",
+      "pytest evidence includes stdin DEVNULL",
+      "pytest evidence includes timed_out false",
+      "cleanup evidence from adeptus_pytest or adeptus_cleanup_runtime_artifacts",
+      "final check for no .pytest_cache, __pycache__, .pyc, .pyo, .pytest-tmp*, .adeptus_pytest_tmp*, pytest-*, or tmp_pytest_* outside protected .adeptus/runs artifacts"
+    ]
+  },
+  "milestone_order": [
+    "m01-baseline-contract",
+    "m02-graph-scenarios",
+    "m03-incidents-reports-cli-docs"
+  ],
+  "milestone_contracts": [
+    {
+      "id": "m01-baseline-contract",
+      "path": ".adeptus/runs/facility-operations-expansion-002/state/milestone-contracts/m01-baseline-contract.json"
+    },
+    {
+      "id": "m02-graph-scenarios",
+      "path": ".adeptus/runs/facility-operations-expansion-002/state/milestone-contracts/m02-graph-scenarios.json"
+    },
+    {
+      "id": "m03-incidents-reports-cli-docs",
+      "path": ".adeptus/runs/facility-operations-expansion-002/state/milestone-contracts/m03-incidents-reports-cli-docs.json"
+    }
+  ],
+  "tool_needs": []
+}
