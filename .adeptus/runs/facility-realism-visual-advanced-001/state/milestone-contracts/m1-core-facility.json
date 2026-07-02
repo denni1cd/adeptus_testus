@@ -1,0 +1,95 @@
+{
+  "run_id": "facility-realism-visual-advanced-001",
+  "milestone_id": "m1-core-facility",
+  "produced_by": "magos_strategos",
+  "planner_agent": "lexmechanic_planner",
+  "goal": "Deliver a small, complete, deterministic Python simulation of Adeptus Testus Facility with tests, docs, CLI preview, JSON persistence, and headless rendering.",
+  "scope": {
+    "product": "Adeptus Testus Facility",
+    "target_project_shape": [
+      "README.md",
+      "pyproject.toml",
+      "src/adeptus_testus/",
+      "tests/"
+    ],
+    "required_rooms": [
+      "Dormitory",
+      "Kitchen",
+      "Workshop",
+      "Infirmary",
+      "Recreation",
+      "Garden",
+      "Control Room"
+    ],
+    "subject": "Sarah",
+    "scenario": "Default normal-day scenario starts at 8:00 AM and can advance deterministically through at least 12:00 PM.",
+    "model_requirements": [
+      "Track Sarah's current room, time, needs, and movement/activity history.",
+      "Use simple documented needs including hunger, energy, morale, and health or equivalent named fields.",
+      "Bound need changes so default Sarah does not require sleep by 9:00 AM.",
+      "Make each room transition explicit enough for review through action names or history reasons.",
+      "Provide deterministic time advancement without randomness."
+    ],
+    "interface_requirements": [
+      "Headless renderer includes all seven rooms and marks Sarah's current location.",
+      "JSON save/load round trip preserves relevant simulation state.",
+      "Small CLI or documented command previews/runs the simulation."
+    ]
+  },
+  "acceptance_criteria": [
+    "Facility model contains exactly the seven required rooms and rejects invalid room references or invalid movement predictably.",
+    "Default normal-day scenario starts Sarah at 8:00 AM, advances deterministically through at least 12:00 PM, records explicit movement/activity reasons, and does not require sleep by 9:00 AM.",
+    "Need changes for hunger, energy, morale, and health are bounded and documented in code or README.",
+    "Headless renderer includes all seven rooms and clearly marks Sarah's current location.",
+    "JSON save/load preserves current time, current room, needs, and relevant history.",
+    "README and CLI preview instructions exist for running tests and previewing the simulation.",
+    "Automated headless pytest coverage verifies required rooms, 8:00 AM start, 9:00 AM no-sleep behavior, deterministic run through at least 12:00 PM, save/load, renderer output, invalid references, and headless pytest execution."
+  ],
+  "inputs": [
+    ".adeptus/runs/facility-realism-visual-advanced-001/state/intake-summary.md",
+    "this milestone contract",
+    "workflow tactical-plan and story-packet role excerpt supplied by controller"
+  ],
+  "expected_outputs": [
+    ".adeptus/runs/facility-realism-visual-advanced-001/milestones/m1-core-facility/tactical-plan.md",
+    ".adeptus/runs/facility-realism-visual-advanced-001/packets/m1-core-facility/<story-id>/story-packet.md",
+    "Product code and tests only after approved tactical planning and story execution",
+    "Milestone validation evidence summarized for review"
+  ],
+  "dependencies": [],
+  "dependency_summary": "No prior milestones. Repository is greenfield; implementation stories may inspect only focused target files named by their story packets.",
+  "non_goals": [
+    "Do not build a web app, GUI, game engine, network service, database, external API, authentication, or image generation.",
+    "Do not modify installed Adeptus skill source, workflow, MCP tools, or global agent definitions.",
+    "Do not add unrelated framework abstractions, broad dependency management, or future-feature scaffolding.",
+    "Do not leave pytest caches, bytecode, or temporary validation artifacts behind."
+  ],
+  "validation_requirements": [
+    "Use pytest tests that can run headlessly.",
+    "Final run evidence must include adeptus_python_compile or equivalent MCP syntax evidence if available.",
+    "Final run evidence must include adeptus_pytest([\"-q\"], timeout_seconds=60) or similarly bounded Adeptus MCP pytest invocation.",
+    "Final pytest evidence must state stdin: DEVNULL and did not time out.",
+    "Cleanup evidence must show no __pycache__, .pytest_cache, .pytest-tmp*, .adeptus_pytest_tmp*, *.pyc, or *.pyo remain outside protected Adeptus run artifacts."
+  ],
+  "allowed_context": [
+    "state/intake-summary.md",
+    "this milestone contract",
+    "listed prior milestone summaries",
+    "workflow tactical schema excerpt"
+  ],
+  "forbidden_context": [
+    "full intake after strategic_pre_review",
+    "full strategic plan after tactical_pre_review",
+    "full installed SKILL.md",
+    "full workflow.yaml",
+    "full .adeptus/runs tree",
+    "sibling or unrelated story artifacts",
+    "generated cache or temp directories"
+  ],
+  "lexmechanic_guidance": [
+    "Prefer one or a few tightly bounded story packets; for a tiny greenfield project, one implementation story is acceptable if it remains a single behavioral contract.",
+    "Story acceptance criteria should stay focused and should not exceed the workflow default unless this milestone contract's acceptance criteria must be split for clarity.",
+    "Tests in each story packet must map directly to that story's acceptance criteria."
+  ],
+  "tool_needs": "none"
+}

@@ -1,0 +1,44 @@
+{
+  "run_id": "facility-realism-visual-advanced-001",
+  "produced_by": "magos_strategos",
+  "intake_summary_path": ".adeptus/runs/facility-realism-visual-advanced-001/state/intake-summary.md",
+  "global_constraints": [
+    "Greenfield Python project in an empty or near-empty repository.",
+    "Keep scope small and conventional: README.md, pyproject.toml, src/adeptus_testus/, tests/.",
+    "Runtime implementation should use the Python standard library unless a dependency is explicitly justified.",
+    "pytest is acceptable for tests.",
+    "Do not build a GUI, web app, game engine, network service, database, external API, authentication, image generation, or broad framework.",
+    "Do not modify installed Adeptus skill source or reusable MCP tools.",
+    "Use bounded context packets after strategic_pre_review.",
+    "Final validation must include Adeptus MCP syntax and pytest evidence, stdin: DEVNULL evidence, no timeout evidence, and cleanup evidence."
+  ],
+  "architecture_contracts": [
+    "Expose a deterministic facility/domain model with exactly the seven named rooms.",
+    "Represent Sarah, current time, current room, needs, movement/action history, and scheduled normal-day activities in testable Python objects.",
+    "Need changes must be bounded, documented, and plausible enough that Sarah does not require sleep by 9:00 AM.",
+    "Provide deterministic advance behavior through at least 12:00 PM.",
+    "Provide a headless visual/text rendering that lists all rooms and visibly marks Sarah's current location.",
+    "Provide JSON serialization and deserialization for relevant simulation state.",
+    "Provide a small command-line preview entry point and README instructions.",
+    "Automated tests must cover required behavior and predictable invalid-reference handling."
+  ],
+  "milestone_contracts": [
+    {
+      "milestone_id": "m1-core-facility",
+      "path": ".adeptus/runs/facility-realism-visual-advanced-001/state/milestone-contracts/m1-core-facility.json",
+      "goal": "Implement and validate the complete small headless Adeptus Testus Facility simulation.",
+      "acceptance_criteria": [
+        "Exactly seven required rooms are modeled.",
+        "Default normal-day scenario starts Sarah at 8:00 AM and does not make her require sleep by 9:00 AM.",
+        "Deterministic run through at least 12:00 PM has stable expected evidence with explicit movement/activity reasons.",
+        "Need changes are bounded and documented.",
+        "Headless renderer includes all rooms and marks Sarah's location.",
+        "JSON save/load round trip preserves relevant state.",
+        "Invalid movement or invalid room references are handled predictably.",
+        "CLI preview command and README instructions exist.",
+        "Headless pytest suite and Adeptus MCP validation evidence pass with cleanup."
+      ],
+      "dependencies": []
+    }
+  ]
+}
