@@ -1,1 +1,0 @@
-Adeptus target-root preflight sentinel.
