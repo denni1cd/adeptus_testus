@@ -24,7 +24,11 @@ def test_cli_default_outputs_deterministic_human_readable_audit(tmp_path):
     assert completed.stdout.splitlines() == [
         f"Root: {tmp_path}",
         "Total files: 3",
+        "Total directories: 1",
         "Total size: 10 bytes",
+        "",
+        "Ignored paths:",
+        "  (none)",
         "",
         "Extensions:",
         "  (no extension): 1",
@@ -50,7 +54,9 @@ def test_cli_json_output_is_parseable_and_uses_root_path(tmp_path):
     assert payload == {
         "root": str(tmp_path),
         "total_files": 2,
+        "total_directories": 1,
         "total_size": 6,
+        "ignored_paths": [],
         "files": [
             {"path": "a.py", "size": 2, "extension": ".py"},
             {"path": "b.txt", "size": 4, "extension": ".txt"},
@@ -99,6 +105,8 @@ def test_cli_repeatable_ignore_patterns_are_applied(tmp_path):
         {"path": "docs/keep.md", "size": 2, "extension": ".md"},
         {"path": "keep.py", "size": 1, "extension": ".py"},
     ]
+    assert payload["total_directories"] == 3
+    assert payload["ignored_paths"] == ["build/output.log", "skip.py"]
     assert payload["ignore_patterns"] == ["skip.py", "build/*"]
 
 

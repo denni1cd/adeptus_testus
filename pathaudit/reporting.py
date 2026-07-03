@@ -26,10 +26,21 @@ def render_directory_report_text(result: DirectoryAuditResult) -> str:
     lines = [
         f"Root: {result.root}",
         f"Total files: {result.total_files}",
+        f"Total directories: {result.total_directories}",
         f"Total size: {result.total_size} bytes",
         "",
-        "Extensions:",
+        "Ignored paths:",
     ]
+
+    if result.ignored_paths:
+        lines.extend(f"  {path}" for path in result.ignored_paths)
+    else:
+        lines.append("  (none)")
+
+    lines.extend([
+        "",
+        "Extensions:",
+    ])
 
     if result.extensions:
         lines.extend(

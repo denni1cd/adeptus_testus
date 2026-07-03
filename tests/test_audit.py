@@ -105,7 +105,9 @@ def test_audit_directory_returns_deterministic_files_groups_and_largest(tmp_path
         FileAuditEntry("tie.bin", 4, ".bin"),
     )
     assert result.total_files == 5
+    assert result.total_directories == 2
     assert result.total_size == 17
+    assert result.ignored_paths == ()
 
 
 def test_audit_directory_ignore_patterns_exclude_counts_groups_and_largest(tmp_path):
@@ -129,6 +131,8 @@ def test_audit_directory_ignore_patterns_exclude_counts_groups_and_largest(tmp_p
         FileAuditEntry("docs/keep.md", 2, ".md"),
         FileAuditEntry("keep.py", 1, ".py"),
     )
+    assert result.total_directories == 3
+    assert result.ignored_paths == ("build/output.log", "skip.py")
     assert result.ignore_patterns == ("skip.py", "build/*")
 
 
@@ -155,7 +159,9 @@ def test_audit_directory_to_dict_is_json_friendly(tmp_path):
     assert result.to_dict() == {
         "root": str(tmp_path),
         "total_files": 1,
+        "total_directories": 1,
         "total_size": 2,
+        "ignored_paths": [],
         "files": [{"path": "a.py", "size": 2, "extension": ".py"}],
         "extensions": {".py": 1},
         "largest_files": [{"path": "a.py", "size": 2, "extension": ".py"}],
@@ -174,7 +180,9 @@ def test_directory_report_data_preserves_deterministic_group_and_largest_order(t
     assert directory_report_data(result) == {
         "root": str(tmp_path),
         "total_files": 3,
+        "total_directories": 1,
         "total_size": 10,
+        "ignored_paths": ["ignored.log"],
         "files": [
             {"path": "README", "size": 4, "extension": ""},
             {"path": "a.py", "size": 2, "extension": ".py"},
@@ -202,7 +210,11 @@ def test_render_directory_report_text_is_stable_and_excludes_ignored_files(tmp_p
     assert rendered.splitlines() == [
         f"Root: {tmp_path}",
         "Total files: 3",
+        "Total directories: 1",
         "Total size: 10 bytes",
+        "",
+        "Ignored paths:",
+        "  ignored.bin",
         "",
         "Extensions:",
         "  (no extension): 1",
@@ -213,7 +225,7 @@ def test_render_directory_report_text_is_stable_and_excludes_ignored_files(tmp_p
         "  README (4 bytes)",
         "  b.txt (4 bytes)",
     ]
-    assert "ignored.bin" not in rendered
+    assert "ignored.bin" not in result.extensions
 
 
 def test_render_directory_report_json_serializes_ordered_report_data(tmp_path):
@@ -226,7 +238,9 @@ def test_render_directory_report_json_serializes_ordered_report_data(tmp_path):
         "{\n"
         f'  "root": {json.dumps(str(tmp_path))},\n'
         '  "total_files": 2,\n'
+        '  "total_directories": 1,\n'
         '  "total_size": 6,\n'
+        '  "ignored_paths": [],\n'
         '  "files": [\n'
         "    {\n"
         '      "path": "a.py",\n'
