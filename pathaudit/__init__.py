@@ -1,5 +1,12 @@
-"""Small path manifest classifier for Adeptus archive boundary checks."""
+"""Public API for pathaudit."""
 
-from .classifier import Classification, classify_path, iter_manifest_entries
+from .audit import AuditEntry, AuditResult, audit_paths
+from .classifier import classify_path, iter_manifest_entries
 
-__all__ = ["Classification", "classify_path", "iter_manifest_entries"]
+__all__ = [
+    "AuditEntry",
+    "AuditResult",
+    "audit_paths",
+    "classify_path",
+    "iter_manifest_entries",
+]
