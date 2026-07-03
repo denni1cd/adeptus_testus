@@ -1,4 +1,4 @@
-"""Command line interface for pathaudit."""
+"""Command line interface for pathaudit directory audits."""
 
 from __future__ import annotations
 
@@ -7,101 +7,67 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
-from . import audit_paths, iter_manifest_entries
-from .audit import CATEGORY_ORDER
-from .reporting import render_json, render_rows, render_summary
-
-
-SAMPLE_PATHS = (
-    "pathaudit/classifier.py",
-    ".adeptus/runs/run-1/state.json",
-    "pkg/__pycache__/module.cpython-312.pyc",
-    "../adeptus_archive",
+from . import (
+    audit_directory,
+    render_directory_report_json,
+    render_directory_report_text,
 )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """Run the pathaudit CLI."""
+
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    fail_on = _parse_fail_on(args.fail_on, parser)
-    paths = SAMPLE_PATHS if args.sample else tuple(_read_manifest(args.manifest))
-
     try:
-        result = audit_paths(paths, fail_on=fail_on)
-    except ValueError as exc:
+        result = audit_directory(
+            args.root,
+            ignore_patterns=args.ignore,
+            top_count=args.top,
+        )
+    except (FileNotFoundError, NotADirectoryError, ValueError) as exc:
         parser.error(str(exc))
 
-    if args.format == "json":
-        output = render_json(result)
-    elif args.summary:
-        output = render_summary(result)
+    if args.json:
+        output = render_directory_report_json(result)
     else:
-        output = render_rows(result)
+        output = render_directory_report_text(result)
 
-    if output:
-        print(output)
-
-    return 2 if result.fail_on_matches else 0
+    print(output)
+    return 0
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="pathaudit",
-        description="Classify manifest paths into product and runtime categories.",
+        description="Audit files below a root directory.",
     )
-    input_group = parser.add_mutually_exclusive_group(required=True)
-    input_group.add_argument(
-        "manifest",
-        nargs="?",
+    parser.add_argument(
+        "root",
         type=Path,
-        help="manifest file containing one path per line",
+        help="root directory to audit",
     )
-    input_group.add_argument(
-        "--sample",
+    parser.add_argument(
+        "--json",
         action="store_true",
-        help="audit built-in sample paths",
+        help="emit deterministic JSON instead of human-readable text",
     )
     parser.add_argument(
-        "--format",
-        choices=("text", "json"),
-        default="text",
-        help="report format",
+        "--top",
+        type=int,
+        default=5,
+        metavar="N",
+        help="number of largest files to include",
     )
     parser.add_argument(
-        "--summary",
-        action="store_true",
-        help="print summary counts instead of rows for text output",
-    )
-    parser.add_argument(
-        "--fail-on",
-        metavar="CATEGORIES",
-        help="comma-separated categories that should return exit code 2 when present",
+        "--ignore",
+        action="append",
+        default=[],
+        metavar="PATTERN",
+        help="fnmatch pattern to exclude; may be repeated",
     )
     return parser
-
-
-def _read_manifest(path: Path | None) -> tuple[str, ...]:
-    if path is None:
-        return ()
-    return tuple(iter_manifest_entries(path.read_text(encoding="utf-8")))
-
-
-def _parse_fail_on(
-    raw_categories: str | None, parser: argparse.ArgumentParser
-) -> tuple[str, ...] | None:
-    if raw_categories is None:
-        return None
-
-    categories = tuple(category.strip() for category in raw_categories.split(","))
-    invalid = [category for category in categories if category not in CATEGORY_ORDER]
-    if invalid:
-        valid_text = ", ".join(CATEGORY_ORDER)
-        parser.error(
-            f"Unknown fail-on category: {', '.join(invalid)}. "
-            f"Expected one of: {valid_text}."
-        )
-    return categories
 
 
 if __name__ == "__main__":

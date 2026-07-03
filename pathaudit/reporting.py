@@ -1,35 +1,56 @@
-"""Deterministic report rendering for path audit results."""
+"""Deterministic report conversion for directory audit results."""
 
 from __future__ import annotations
 
 import json
 from typing import Any
 
-from .audit import AuditResult
+from .audit import DirectoryAuditResult, FileAuditEntry
 
 
-def render_rows(result: AuditResult) -> str:
-    """Render audit entries as category/path tab-separated rows."""
+def directory_report_data(result: DirectoryAuditResult) -> dict[str, Any]:
+    """Return a JSON-ready directory audit report with deterministic ordering."""
 
-    return "\n".join(f"{entry.category}\t{entry.path}" for entry in result.entries)
-
-
-def render_summary(result: AuditResult) -> str:
-    """Render deterministic summary count lines."""
-
-    return "\n".join(
-        f"summary\t{category}\t{count}" for category, count in result.summary.items()
-    )
+    return result.to_dict()
 
 
-def render_json(result: AuditResult) -> str:
-    """Render audit result JSON with ordered entries and complete summary."""
+def render_directory_report_json(result: DirectoryAuditResult) -> str:
+    """Render a deterministic JSON directory audit report."""
 
-    payload: dict[str, Any] = {
-        "entries": [
-            {"kind": entry.category, "path": entry.path}
-            for entry in result.entries
-        ],
-        "summary": dict(result.summary.items()),
-    }
-    return json.dumps(payload, indent=2)
+    return json.dumps(directory_report_data(result), indent=2)
+
+
+def render_directory_report_text(result: DirectoryAuditResult) -> str:
+    """Render a deterministic human-readable directory audit report."""
+
+    lines = [
+        f"Root: {result.root}",
+        f"Total files: {result.total_files}",
+        f"Total size: {result.total_size} bytes",
+        "",
+        "Extensions:",
+    ]
+
+    if result.extensions:
+        lines.extend(
+            f"  {_display_extension(extension)}: {count}"
+            for extension, count in result.extensions.items()
+        )
+    else:
+        lines.append("  (none)")
+
+    lines.extend(["", "Largest files:"])
+    if result.largest_files:
+        lines.extend(f"  {_display_file(entry)}" for entry in result.largest_files)
+    else:
+        lines.append("  (none)")
+
+    return "\n".join(lines)
+
+
+def _display_extension(extension: str) -> str:
+    return extension or "(no extension)"
+
+
+def _display_file(entry: FileAuditEntry) -> str:
+    return f"{entry.path} ({entry.size} bytes)"

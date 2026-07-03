@@ -12,129 +12,113 @@ def run_pathaudit(*args):
     )
 
 
-def write_manifest(tmp_path):
-    manifest = tmp_path / "manifest.txt"
-    manifest.write_text(
-        "\n".join(
-            [
-                "# ignored",
-                "pathaudit/classifier.py",
-                ".adeptus/runs/run-1/state.json",
-                "pkg/__pycache__/module.cpython-312.pyc",
-                "../adeptus_archive",
-            ]
-        ),
-        encoding="utf-8",
-    )
-    return manifest
+def test_cli_default_outputs_deterministic_human_readable_audit(tmp_path):
+    write_file(tmp_path / "b.txt", "1234")
+    write_file(tmp_path / "a.py", "12")
+    write_file(tmp_path / "README", "1234")
 
-
-def test_sample_default_outputs_ordered_text_rows():
-    completed = run_pathaudit("--sample")
+    completed = run_pathaudit(str(tmp_path))
 
     assert completed.returncode == 0
     assert completed.stderr == ""
     assert completed.stdout.splitlines() == [
-        "product\tpathaudit/classifier.py",
-        "runtime_artifact\t.adeptus/runs/run-1/state.json",
-        "generated_cache\tpkg/__pycache__/module.cpython-312.pyc",
-        "invalid\t../adeptus_archive",
+        f"Root: {tmp_path}",
+        "Total files: 3",
+        "Total size: 10 bytes",
+        "",
+        "Extensions:",
+        "  (no extension): 1",
+        "  .py: 1",
+        "  .txt: 1",
+        "",
+        "Largest files:",
+        "  README (4 bytes)",
+        "  b.txt (4 bytes)",
+        "  a.py (2 bytes)",
     ]
 
 
-def test_sample_json_is_parseable_with_ordered_entries_and_complete_summary():
-    completed = run_pathaudit("--sample", "--format", "json")
+def test_cli_json_output_is_parseable_and_uses_root_path(tmp_path):
+    write_file(tmp_path / "b.txt", "1234")
+    write_file(tmp_path / "a.py", "12")
+
+    completed = run_pathaudit(str(tmp_path), "--json")
 
     assert completed.returncode == 0
+    assert completed.stderr == ""
     payload = json.loads(completed.stdout)
     assert payload == {
-        "entries": [
-            {"kind": "product", "path": "pathaudit/classifier.py"},
-            {
-                "kind": "runtime_artifact",
-                "path": ".adeptus/runs/run-1/state.json",
-            },
-            {
-                "kind": "generated_cache",
-                "path": "pkg/__pycache__/module.cpython-312.pyc",
-            },
-            {"kind": "invalid", "path": "../adeptus_archive"},
+        "root": str(tmp_path),
+        "total_files": 2,
+        "total_size": 6,
+        "files": [
+            {"path": "a.py", "size": 2, "extension": ".py"},
+            {"path": "b.txt", "size": 4, "extension": ".txt"},
         ],
-        "summary": {
-            "product": 1,
-            "runtime_artifact": 1,
-            "generated_cache": 1,
-            "invalid": 1,
-        },
+        "extensions": {".py": 1, ".txt": 1},
+        "largest_files": [
+            {"path": "b.txt", "size": 4, "extension": ".txt"},
+            {"path": "a.py", "size": 2, "extension": ".py"},
+        ],
+        "ignore_patterns": [],
     }
 
 
-def test_manifest_default_outputs_ordered_text_rows(tmp_path):
-    completed = run_pathaudit(str(write_manifest(tmp_path)))
+def test_cli_top_count_limits_largest_files(tmp_path):
+    for index in range(4):
+        write_file(tmp_path / f"{index}.dat", "x" * (index + 1))
 
-    assert completed.returncode == 0
-    assert completed.stdout.splitlines() == [
-        "product\tpathaudit/classifier.py",
-        "runtime_artifact\t.adeptus/runs/run-1/state.json",
-        "generated_cache\tpkg/__pycache__/module.cpython-312.pyc",
-        "invalid\t../adeptus_archive",
-    ]
-
-
-def test_manifest_summary_includes_all_categories(tmp_path):
-    completed = run_pathaudit(str(write_manifest(tmp_path)), "--summary")
-
-    assert completed.returncode == 0
-    assert completed.stdout.splitlines() == [
-        "summary\tproduct\t1",
-        "summary\truntime_artifact\t1",
-        "summary\tgenerated_cache\t1",
-        "summary\tinvalid\t1",
-    ]
-
-
-def test_manifest_json_is_parseable_with_ordered_entries_and_complete_summary(tmp_path):
-    completed = run_pathaudit(str(write_manifest(tmp_path)), "--format", "json")
+    completed = run_pathaudit(str(tmp_path), "--top", "2", "--json")
 
     assert completed.returncode == 0
     payload = json.loads(completed.stdout)
-    assert [entry["kind"] for entry in payload["entries"]] == [
-        "product",
-        "runtime_artifact",
-        "generated_cache",
-        "invalid",
+    assert [entry["path"] for entry in payload["largest_files"]] == [
+        "3.dat",
+        "2.dat",
     ]
-    assert payload["summary"] == {
-        "product": 1,
-        "runtime_artifact": 1,
-        "generated_cache": 1,
-        "invalid": 1,
-    }
 
 
-def test_manifest_fail_on_invalid_returns_exit_2(tmp_path):
-    completed = run_pathaudit(str(write_manifest(tmp_path)), "--fail-on", "invalid")
+def test_cli_repeatable_ignore_patterns_are_applied(tmp_path):
+    write_file(tmp_path / "keep.py", "1")
+    write_file(tmp_path / "skip.py", "123456")
+    write_file(tmp_path / "build" / "output.log", "123456789")
+    write_file(tmp_path / "docs" / "keep.md", "12")
 
-    assert completed.returncode == 2
-    assert "invalid\t../adeptus_archive" in completed.stdout
-    assert completed.stderr == ""
-
-
-def test_manifest_fail_on_multiple_matching_categories_returns_exit_2(tmp_path):
     completed = run_pathaudit(
-        str(write_manifest(tmp_path)),
-        "--fail-on",
-        "invalid,runtime_artifact,generated_cache",
+        str(tmp_path),
+        "--ignore",
+        "skip.py",
+        "--ignore",
+        "build/*",
+        "--json",
     )
 
-    assert completed.returncode == 2
-    assert "runtime_artifact\t.adeptus/runs/run-1/state.json" in completed.stdout
-    assert "generated_cache\tpkg/__pycache__/module.cpython-312.pyc" in completed.stdout
+    assert completed.returncode == 0
+    payload = json.loads(completed.stdout)
+    assert payload["files"] == [
+        {"path": "docs/keep.md", "size": 2, "extension": ".md"},
+        {"path": "keep.py", "size": 1, "extension": ".py"},
+    ]
+    assert payload["ignore_patterns"] == ["skip.py", "build/*"]
 
 
-def test_invalid_fail_on_category_is_rejected(tmp_path):
-    completed = run_pathaudit(str(write_manifest(tmp_path)), "--fail-on", "typo")
+def test_cli_default_top_count_is_five(tmp_path):
+    for index in range(6):
+        write_file(tmp_path / f"{index}.dat", "x" * (index + 1))
 
-    assert completed.returncode != 0
-    assert completed.stdout == ""
-    assert "Unknown fail-on category: typo" in completed.stderr
+    completed = run_pathaudit(str(tmp_path), "--json")
+
+    assert completed.returncode == 0
+    payload = json.loads(completed.stdout)
+    assert [entry["path"] for entry in payload["largest_files"]] == [
+        "5.dat",
+        "4.dat",
+        "3.dat",
+        "2.dat",
+        "1.dat",
+    ]
+
+
+def write_file(path, text):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
